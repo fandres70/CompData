@@ -1,0 +1,151 @@
+This is a set of step-by-step instructions on how to approach writing and submitting the <b>complete</b> function, Part 2 of Programming Assignment 2. This is inspired up James' popular thread on <b>getmonitor</b>: <a target="" href="https://class.coursera.org/compdata-004/forum/thread?thread_id=290">https://class.coursera.org/compdata-004/forum/thread?thread_id=290</a>
+<br>
+<br>
+<ol>
+    <li>Download and unzip the data files. If you have already done so, skip to step 2
+        <br>
+        <ul>
+            <li>Go to Programming Assignments (left panel)</li>
+            <li>Open Week 2 if you cannot see the instructions by clicking on it</li>
+            <li>Click on View Instructions</li>
+            <li>Download and open (unzip) <b>specdata.zip</b>
+            </li>
+            <li>Extract the <b>specdata</b> folder into your working directory (for me it is C:/Users/imaci/Documents/CompData/Assignment2)
+                <br>
+                <br>
+            </li>
+        </ul>
+    </li>
+    <li>Open R (or Rstudio) and change the working directory typing (in my case)
+        <br>setwd('C:/Users/imaci/Documents/CompData/Assignment2')
+        <br>Remember to use either '/' or '\\' for the path or R will throw some weird errors.
+        <br>
+        <br>
+    </li>
+    <li>Open a new script file and paste in the code from Part 2 in the Programming Assignment instructions page. This is the skeleton of the<b> complete</b> function that we will flesh out.
+        <br>
+        <br>
+    </li>
+    <li>Save the script as complete.R inside your working directory, NOT inside <b>specdata</b> but next to it.
+        <br>
+        <br>
+    </li>
+    <li>At this point we can start working on completing the code. Let's read the instructions on what we need it to do:
+        <br>
+        <br><i>Write a function that reads a directory full of files and reports the
+number of completely observed cases in each data file. The function
+should return a data frame where the first column is the name of the
+file and the second column is the number of complete cases.<br><br></i>So our function needs to
+        <br>
+        <ul>
+            <li>read files from a directory</li>
+            <li>for each file count the number of complete cases (rows with no NAs)</li>
+            <li>save the results for each file in a data frame with two columns with the file id and the number of complete cases</li>
+            <li>return the data frame when you are done with all files</li>
+            <li>we are not asked to print anything, just to return one data frame
+                <br>
+                <br>
+            </li>
+        </ul>
+    </li>
+    <li>Go back to the script file and look at the first line:
+        <br><pre>complete &lt;- function(directory, id = 1:332) {</pre>That line creates a function called complete that takes two arguments, so when we call it we should use <pre><code>complete(something, somethingElse)</code></pre>where <code>something</code> will
+        be stored into the (internal) variable <b>directory</b> and <code>somethingElse</code> will be stored into variable <b>id</b>.
+        <br>
+        <br>We can also see that if we only write
+        <br><pre><code>complete(someThing)</code></pre>then by default R will assign vector 1:332 to variable <b>id</b>. Go to the R console, the thing that starts with <b>&gt;</b>, and enter 1:332 to convince yourself that it produces a vector of numbers.
+        <br>
+        <br>
+    </li>
+    <li>At this point we don't know what kind (what <b>class</b>) of arguments our function should expect, so we read on and see if it starts making more sense:
+        <br><pre>## 'directory' is a character vector of length 1 indicating
+        ## the location of the CSV files
+
+        ## 'id' is an integer vector indicating the monitor ID numbers
+        ## to be used</pre>These lines all start with # and R will completely ignore them. That means they are meant for us! It tells us exactly what we were asking ourselves, what class should directory and id be.
+        <br>
+        <br>So directory will be a single <b>character</b> class value (a vector of length 1) indicating the name of the directory where the files are stored (huh!) and <b>id</b> is an integer vector of all monitor ID numbers that we want to read. At least the
+        variable names won't be hard to remember. Recall from the introduction of the assignment that each monitor has created one file called ZZZ.csv where ZZZ is the id number (007, 021, or 300).
+        <br>
+        <br>
+    </li>
+    <li>We are still confused about one point: what should our function return? The intro says a data frame with 2 columns, but that is still too vague. What should the columns be named? We read on:
+        <br><pre>## Return a data frame of the form:
+        ## id nobs
+        ## 1  117
+        ## 2  1041
+        ## ...
+        ## where 'id' is the monitor ID number and 'nobs' is the
+        ## number of complete cases</pre>That clarifies it. We need to return a data frame object with columns named <b>id</b> and <b>nobs</b>, with the file ID number and the count of complete cases. That ought to be enough information to build our function.
+        <br>
+        <br>
+    </li>
+    <li>To recap, our function needs to:
+        <br>
+        <ul>
+            <li>get a directory name and a vector of numbers</li>
+            <li>go into the directory and read into a data frame the file (monitor) indicated by the first entry of the vector called <b>id</b>. We need to do this in order to count the complete cases</li>
+            <li>count the complete cases of that monitor and take note into a data frame of two values, one in each column: monitor id, number of complete cases</li>
+            <li>move on to the file indicated by the second entry in id and do the same thing: read, count complete cases, take note</li>
+            <li>continue until we run through the values in <b>id</b>
+            </li>
+        </ul>
+    </li>
+    <br>That looks like it a repetitive task that could be done with a loop that goes through each element of id. Looking at that list of tasks we need a couple of things:
+    <br>
+    <ul>
+        <li>an empty data frame with two columns where to keep track of the outcome for each file we process: id, nobs&nbsp;</li>
+        <li>a way to read files given a directory name and an id number. We could write one from scratch or realize that we have already written <b>getmonitor</b>
+            that does just that! (If you have not completed part 1 of the assignment, I suggest you do so. James' thread linked above is the best place to start if you are lost)
+            <br>
+            <br>
+        </li>
+    </ul>
+    <li>Recall that you do not need to create variables <b>directory</b> and <b>id</b>. They will already exist (generated automatically) when the function is called and they will have the values given when they are called as <pre><code>complete(something, somethingElse)
+</code></pre><b>directory</b> will have value <code>something</code> and <b>id</b> will have value <code>somethingElse</code>
+        <br>
+        <br>
+    </li>
+    <li>To make the getmonitor function available in your function definition you need to make sure it is loaded into the R memory at the start of your function's code. Assuming it is in the same directory (it should be), you can load it using
+        <br><pre><code>source('getmonitor.R')</code></pre>
+        <br>
+    </li>
+    <li>You can complete the data frame row-by-row starting from an empty data frame of one row only. Try the following code in the console:
+        <br><pre><code>&gt; a &lt;- data.frame(x=NA, y=NA)<br>&gt; a&nbsp; &nbsp; &nbsp; ## look at what that line created, how many rows?<br>&gt; a[1, ] &lt;- c(6, 7)&nbsp; &nbsp; ## assign values to the first row of a<br>&gt; a[2, ] &lt;- c(34, 21)&nbsp; ## assign values to the second row of a<br></code></pre>
+        <br>We can assign values to previously nonexistent rows, R will just create them. That is, however, not best practice. The best would be to start with an empty data frame (filled with NAs) of the right dimensions (the right number of rows). To make
+        and empty data frame with 2 columns at 7 rows you can use:
+        <br><pre><code>&gt; a &lt;- data.frame(x=rep(NA, 7), y=rep(NA, 7))<br>&gt; a&nbsp; &nbsp; ## check what we have created</code></pre>
+        <br>Make sure you understand what rep(NA, 7) does by typing it in the terminal.
+        <br>
+        <br>
+    </li>
+    <li>There are many ways to write the loop, but I advise you use an index (say, named i) of the same length as vector id. This way you can use it to index id and the row in the data frame that you will fill row-by-row
+        <br>
+        <br>
+    </li>
+</ol>When you are done, or when you think you are done :-), <b>save</b> the script file.
+<br>
+<br>Switch to the console and type
+<br><pre><code>&gt; source('complete.R')</code></pre>
+<ol>
+
+</ol>
+<br>If there are no error messages filling your screen, it's time to test your script. Type in the terminal:
+<br>
+<pre><code>&gt; complete('specdata', 1)<br>&nbsp; id nobs<br>1  1&nbsp; 117<br></code></pre>
+<br>That should be the output, meaning the data from monitor 21 have 421 complete cases. There are more examples in the provided test output pdf: <a target="" href="http://spark-public.s3.amazonaws.com/compdata/documents/complete-output.pdf">http://spark-public.s3.amazonaws.com/compdata/documents/complete-output.pdf</a>
+<br>
+<br>If your results are not the same, or if you get an error when you try the examples then go back to the script editor and try to fix it. Make sure to SAVE and RUN <pre><code>source('complete.R')</code></pre>after each attempt, otherwise R will not read
+your new code.
+<br>
+<br>It's OK to be happy if you finally get the expected result, but you have NOT submitted yet!
+<br>
+<br>To do that you have to run the official test script. According to the instructions page you should run in the terminal window:
+<br><pre>source("http://spark-public.s3.amazonaws.com/compdata/scripts/getmonitor-test.R")
+getmonitor.testscript()</pre>
+<br>
+<ol>
+
+</ol>
+<br>
+<br>
